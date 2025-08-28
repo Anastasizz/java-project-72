@@ -8,3 +8,7 @@
 [![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=Anastasizz_java-project-72&metric=duplicated_lines_density)](https://sonarcloud.io/summary/new_code?id=Anastasizz_java-project-78)
 [![Bugs](https://sonarcloud.io/api/project_badges/measure?project=Anastasizz_java-project-72&metric=bugs)](https://sonarcloud.io/summary/new_code?id=Anastasizz_java-project-78)
 [![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=Anastasizz_java-project-72&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=Anastasizz_java-project-78)
+
+# Демо
+
+[Javalin App](https://java-project-72-hwpp.onrender.com)
