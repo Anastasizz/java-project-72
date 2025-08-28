@@ -1,5 +1,6 @@
 plugins {
     id("java")
+    application
     distribution
 
     checkstyle
@@ -7,6 +8,7 @@ plugins {
 
     id("com.github.ben-manes.versions") version "0.52.0"
     id("org.sonarqube") version "6.2.0.5505"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
 group = "hexlet.code"
@@ -19,6 +21,9 @@ repositories {
 dependencies {
     testImplementation(platform("org.junit:junit-bom:5.10.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")
+
+    implementation("io.javalin:javalin:6.7.0")
+    implementation("org.slf4j:slf4j-simple:2.0.16")
 }
 
 sonar {
@@ -45,3 +50,7 @@ tasks.test {
 }
 
 tasks.jacocoTestReport { reports { xml.required.set(true) } }
+
+application {
+    mainClass = "hexlet.code.App"
+}
