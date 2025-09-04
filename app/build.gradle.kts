@@ -9,6 +9,7 @@ plugins {
     id("com.github.ben-manes.versions") version "0.52.0"
     id("org.sonarqube") version "6.2.0.5505"
     id("com.github.johnrengelman.shadow") version "8.1.1"
+    id("io.freefair.lombok") version "8.14"
 }
 
 group = "hexlet.code"
@@ -24,6 +25,8 @@ dependencies {
 
     implementation("io.javalin:javalin:6.7.0")
     implementation("org.slf4j:slf4j-simple:2.0.16")
+    implementation("com.h2database:h2:2.3.232")
+    implementation("com.zaxxer:HikariCP:5.1.0")
 }
 
 sonar {
