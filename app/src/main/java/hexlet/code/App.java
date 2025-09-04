@@ -26,7 +26,7 @@ public final class App {
              var statement = connection.createStatement()) {
             statement.execute(sql);
         }
-
+        Runtime.getRuntime().addShutdownHook(new Thread(connPool::close));
         BaseRepository.connPool = connPool;
 
         var app = Javalin.create(config -> {
