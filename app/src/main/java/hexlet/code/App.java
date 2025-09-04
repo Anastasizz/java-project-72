@@ -19,15 +19,15 @@ public final class App {
         var hikariConfig = new HikariConfig();
         hikariConfig.setJdbcUrl(getDataBaseUrl());
 
-        var connPool = new HikariDataSource(hikariConfig);
-        var sql = readResourceFile("schema.sql");
+        try (var connPool = new HikariDataSource(hikariConfig)) {
+            var sql = readResourceFile("schema.sql");
 
-        try (var connection = connPool.getConnection();
-             var statement = connection.createStatement()) {
-            statement.execute(sql);
+            try (var connection = connPool.getConnection();
+                 var statement = connection.createStatement()) {
+                statement.execute(sql);
+            }
+            BaseRepository.connPool = connPool;
         }
-        Runtime.getRuntime().addShutdownHook(new Thread(connPool::close));
-        BaseRepository.connPool = connPool;
 
         var app = Javalin.create(config -> {
             config.bundledPlugins.enableDevLogging();
