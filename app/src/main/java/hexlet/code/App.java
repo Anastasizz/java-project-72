@@ -5,6 +5,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import gg.jte.ContentType;
 import gg.jte.TemplateEngine;
 import gg.jte.resolve.ResourceCodeResolver;
+import hexlet.code.controller.UrlsController;
 import hexlet.code.repository.BaseRepository;
 import io.javalin.Javalin;
 import io.javalin.rendering.template.JavalinJte;
@@ -21,30 +22,38 @@ public final class App {
 
     public static Javalin getApp() throws IOException, SQLException {
         var hikariConfig = new HikariConfig();
-        hikariConfig.setJdbcUrl(getDataBaseUrl());
+        var jdbcUrl = getDataBaseUrl();
+        hikariConfig.setJdbcUrl(jdbcUrl);
 
-        try (var connPool = new HikariDataSource(hikariConfig)) {
-            var sql = readResourceFile("schema.sql");
+        var connPool = new HikariDataSource(hikariConfig);
+        var sql = readResourceFile("schema.sql");
 
-            try (var connection = connPool.getConnection();
-                 var statement = connection.createStatement()) {
-                statement.execute(sql);
-            }
-            BaseRepository.connPool = connPool;
+        try (var connection = connPool.getConnection();
+             var statement = connection.createStatement()) {
+            statement.execute(sql);
         }
+        BaseRepository.connPool = connPool;
 
         var app = Javalin.create(config -> {
             config.bundledPlugins.enableDevLogging();
             config.fileRenderer(new JavalinJte(createTemplateEngine()));
         });
 
-        app.get("/", ctx -> {
-            ctx.render("index.jte");
+        app.before(ctx -> {
+            ctx.res().setCharacterEncoding("UTF-8");
+            ctx.req().setCharacterEncoding("UTF-8");
+            ctx.contentType("text/html; charset=UTF-8");
         });
+
+        app.get("/", UrlsController::home);
+        app.post("/urls", UrlsController::create);
+        app.get("/urls", UrlsController::index);
+        app.get("/urls/{id}", UrlsController::show);
         return app;
     }
 
     public static void main(String[] args) throws IOException, SQLException {
+        System.setProperty("file.encoding", "UTF-8");
         var app = getApp();
         app.start(getPort());
     }

@@ -1,25 +1,35 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Подключение Bootstrap</title>
+@import hexlet.code.dto.MainPage
+@param MainPage page
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
-</head>
-<body>
-    <div class="container my-5">
-        <h1>Hello, world!</h1>
-        <div class="col-lg-8 px-0">
-            <p class="fs-5">You've successfully loaded up the Bootstrap starter example. It includes <a href="https://getbootstrap.com/">Bootstrap 5</a> via the <a href="https://www.jsdelivr.com/package/npm/bootstrap">jsDelivr CDN</a> and includes an additional CSS and JS file for your own code.</p>
-            <p>Feel free to download or copy-and-paste any parts of this example.</p>
-
-            <hr class="col-1 my-4">
-
-            <a href="https://getbootstrap.com" class="btn btn-primary">Read the Bootstrap docs</a>
-            <a href="https://github.com/twbs/examples" class="btn btn-secondary">View on GitHub</a>
+@template.layout.page(
+content = @`
+    @if(page.getFlash() != null)
+        <div class="alert alert-dismissible fade show alert-danger" role="alert">
+            <p class="m-0">${page.getFlash()}</p>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+    <div class="container-fluid bg-dark p-5">
+        <div class="row">
+            <div class="col-md-10 col-lg-8 mx-auto text-white">
+                <h1 class="display-3 mb-0">Анализатор страниц</h1>
+                <p class="lead">Быстрая проверка сайта на SEO пригодность</p>
+                <form method="post" action="/urls" class="rss-form text-body">
+                    <div class="row">
+                        <div class="col">
+                            <div class="form-floating">
+                                <input id="url-input" type="text" class="form-control w-100" placeholder="Введите ссылку" name="url">
+                                <label for="url-input">Введите ссылку</label>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <button class="h-100 btn btn-lg btn-primary px-sm-5" type="submit">Найти</button>
+                        </div>
+                    </div>
+                </form>
+                <p class="mt-2 mb-0 text-muted">Пример: https://example.com</p>
+            </div>
         </div>
     </div>
-</body>
-</html>
+`
+)

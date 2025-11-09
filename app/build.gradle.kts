@@ -44,6 +44,10 @@ sonar {
     }
 }
 
+tasks.withType<JavaExec> {
+    jvmArgs("-Dfile.encoding=UTF-8")
+}
+
 tasks.test {
     useJUnitPlatform()
     testLogging {
