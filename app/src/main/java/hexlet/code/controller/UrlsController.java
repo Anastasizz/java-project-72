@@ -20,7 +20,7 @@ public class UrlsController {
         var rawName = ctx.formParam("url");
 
         if (rawName == null || rawName.isBlank()) {
-            ctx.sessionAttribute("flash", "URL не введен");
+            ctx.sessionAttribute("flash", "url не введен");
             ctx.redirect("/");
             return;
         }
