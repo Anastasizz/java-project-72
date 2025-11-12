@@ -56,7 +56,7 @@ public class UrlsController {
         ctx.render("urls/index.jte", model("page", page));
     }
 
-    public static void home(Context ctx) {
+    public static void main(Context ctx) {
         String flash = ctx.consumeSessionAttribute("flash");
         Status status = ctx.consumeSessionAttribute("status");
         var page = new MainPage(flash, status);

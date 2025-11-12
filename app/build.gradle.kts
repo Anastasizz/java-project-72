@@ -24,12 +24,14 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter")
 
     implementation("io.javalin:javalin:6.7.0")
+    implementation("io.javalin:javalin-bundle:6.6.0")
+    implementation("io.javalin:javalin-rendering:6.1.3")
     implementation("org.slf4j:slf4j-simple:2.0.16")
     implementation("com.h2database:h2:2.3.232")
     implementation("com.zaxxer:HikariCP:5.1.0")
     implementation("org.postgresql:postgresql:42.7.3")
     implementation("gg.jte:jte:3.2.1")
-    implementation("io.javalin:javalin-rendering:6.1.3")
+
 }
 
 sonar {

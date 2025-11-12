@@ -45,7 +45,7 @@ public final class App {
             ctx.contentType("text/html; charset=UTF-8");
         });
 
-        app.get("/", UrlsController::home);
+        app.get("/", UrlsController::main);
         app.post("/urls", UrlsController::create);
         app.get("/urls", UrlsController::index);
         app.get("/urls/{id}", UrlsController::show);
