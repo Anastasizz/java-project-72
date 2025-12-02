@@ -34,6 +34,7 @@ public final class App {
         }
         BaseRepository.connPool = connPool;
 
+
         var app = Javalin.create(config -> {
             config.bundledPlugins.enableDevLogging();
             config.fileRenderer(new JavalinJte(createTemplateEngine()));
@@ -45,10 +46,11 @@ public final class App {
             ctx.contentType("text/html; charset=UTF-8");
         });
 
-        app.get("/", UrlsController::main);
+        app.get("/", UrlsController::home);
         app.post("/urls", UrlsController::create);
         app.get("/urls", UrlsController::index);
         app.get("/urls/{id}", UrlsController::show);
+        app.post("/urls/{id}/checks", UrlsController::check);
         return app;
     }
 

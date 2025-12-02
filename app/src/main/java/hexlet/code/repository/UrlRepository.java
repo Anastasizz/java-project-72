@@ -1,5 +1,6 @@
 package hexlet.code.repository;
 
+import hexlet.code.dto.UrlItem;
 import hexlet.code.model.Url;
 
 import java.sql.SQLException;
@@ -44,12 +45,35 @@ public class UrlRepository extends BaseRepository {
                 var id = resultSet.getLong("id");
                 var name = resultSet.getString("name");
                 var createdAt = resultSet.getTimestamp("created_at").toLocalDateTime();
-                var url = new Url(name);
-                url.setId(id);
-                url.setCreatedAt(createdAt);
+                var url = new Url(id, name, createdAt);
                 urls.add(url);
             }
             return urls;
+        }
+    }
+
+    public static List<UrlItem> getItems() throws SQLException {
+        String sql = "SELECT u.*, c.created_at AS check_created_at, c.status_code "
+                + "FROM urls AS u "
+                + "LEFT JOIN url_checks AS c "
+                + "ON c.id = ( SELECT id FROM url_checks "
+                + "WHERE url_id = u.id "
+                + "ORDER BY created_at DESC LIMIT 1 )";
+
+        try (var conn = connPool.getConnection();
+             var stmt = conn.prepareStatement(sql)) {
+            var resultSet = stmt.executeQuery();
+            var urlItems = new ArrayList<UrlItem>();
+            while (resultSet.next()) {
+                var id = resultSet.getLong("id");
+                var name = resultSet.getString("name");
+                Timestamp ts = resultSet.getTimestamp("check_created_at");
+                LocalDateTime checkCreatedAt = (ts != null) ? ts.toLocalDateTime() : null;
+                var statusCode = resultSet.getInt("status_code");
+                var urlItem = new UrlItem(id, name, checkCreatedAt, statusCode);
+                urlItems.add(urlItem);
+            }
+            return urlItems;
         }
     }
 
@@ -61,9 +85,10 @@ public class UrlRepository extends BaseRepository {
             stmt.setString(1, name);
             var resultSet = stmt.executeQuery();
             if (resultSet.next()) {
-                var url = new Url(resultSet.getString("name"));
-                url.setId(resultSet.getLong("id"));
-                url.setCreatedAt(resultSet.getTimestamp("created_at").toLocalDateTime());
+                var id = resultSet.getLong("id");
+                var nameUrl = resultSet.getString("name");
+                var createdAt = resultSet.getTimestamp("created_at").toLocalDateTime();
+                var url = new Url(id, nameUrl, createdAt);
                 return Optional.of(url);
             } else {
                 return Optional.empty();
@@ -78,9 +103,9 @@ public class UrlRepository extends BaseRepository {
             stmt.setLong(1, id);
             var resultSet = stmt.executeQuery();
             if (resultSet.next()) {
-                var url = new Url(resultSet.getString("name"));
-                url.setId(resultSet.getLong("id"));
-                url.setCreatedAt(resultSet.getTimestamp("created_at").toLocalDateTime());
+                var nameUrl = resultSet.getString("name");
+                var createdAt = resultSet.getTimestamp("created_at").toLocalDateTime();
+                var url = new Url(id, nameUrl, createdAt);
                 return Optional.of(url);
             } else {
                 return Optional.empty();

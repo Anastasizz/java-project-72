@@ -2,13 +2,8 @@
 @param MainPage page
 
 @template.layout.page(
+mainPage = page,
 content = @`
-    @if(page.getFlash() != null)
-        <div class="alert alert-dismissible fade show alert-danger" role="alert">
-            <p class="m-0">${page.getFlash()}</p>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    @endif
     <div class="container-fluid bg-dark p-5">
         <div class="row">
             <div class="col-md-10 col-lg-8 mx-auto text-white">
@@ -18,7 +13,7 @@ content = @`
                     <div class="row">
                         <div class="col">
                             <div class="form-floating">
-                                <input id="url-input" type="text" class="form-control w-100" placeholder="Введите ссылку" name="url">
+                                <input id="url-input" type="text" class="form-control w-100" placeholder="Введите ссылку" name="url" required>
                                 <label for="url-input">Введите ссылку</label>
                             </div>
                         </div>

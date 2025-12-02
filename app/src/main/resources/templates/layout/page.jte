@@ -1,5 +1,10 @@
 @import gg.jte.Content
+@import hexlet.code.dto.MainPage
+@import hexlet.code.dto.enums.Status
+
+@param MainPage mainPage
 @param Content content
+
 
 <!DOCTYPE html>
 <html lang="ru">
@@ -27,6 +32,26 @@
     </div>
 </nav>
 <main class="flex-grow-1">
+    @if(mainPage.getFlash() != null)
+        @if(mainPage.getStatus() == Status.SUCCESS)
+            <div class="alert alert-dismissible fade show alert-success" role="alert">
+                <p class="m-0">${mainPage.getFlash()}</p>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @else
+            @if(mainPage.getStatus() == Status.PRIMARY)
+                <div class="alert alert-dismissible fade show alert-primary" role="alert">
+                    <p class="m-0">${mainPage.getFlash()}</p>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @else
+                <div class="alert alert-dismissible fade show alert-danger" role="alert">
+                    <p class="m-0">${mainPage.getFlash()}</p>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @endif
+        @endif
+    @endif
     ${content}
 </main>
 
