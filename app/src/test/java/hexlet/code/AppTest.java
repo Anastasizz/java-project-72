@@ -2,6 +2,7 @@ package hexlet.code;
 
 import hexlet.code.model.Url;
 import hexlet.code.model.UrlCheck;
+import hexlet.code.repository.UrlCheckRepository;
 import hexlet.code.service.UrlCheckService;
 import io.javalin.Javalin;
 import io.javalin.testtools.JavalinTest;
@@ -78,6 +79,7 @@ public class AppTest {
 
     @Test
     public void testCreateUrl() {
+
         JavalinTest.test(app, (server, client) -> {
             var name = "https://mypage.com";
             var requestBody = "url=" + name;
@@ -115,6 +117,26 @@ public class AppTest {
             var recordedRequest = mockServer.takeRequest();
             assertEquals("/", recordedRequest.getPath());
         }
+    }
+
+    @Test
+    public void testCheckPage() {
+        JavalinTest.test(app, (server, client) -> {
+            var url = new Url(1L, "http://example.com", LocalDateTime.now());
+            UrlRepository.save(url);
+            var check =  new UrlCheck(url.getId(), 200, "Title", "Hello", "description");
+            UrlCheckRepository.save(check);
+
+
+            var response = client.get("/urls/" + url.getId());
+            assertEquals(200, response.code());
+
+            assertNotNull(response.body());
+            var body = response.body().string();
+            assertTrue(body.contains("Title"));
+            assertTrue(body.contains("Hello"));
+            assertTrue(body.contains("description"));
+        });
     }
 
 }

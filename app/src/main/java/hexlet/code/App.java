@@ -40,6 +40,10 @@ public final class App {
             config.fileRenderer(new JavalinJte(createTemplateEngine()));
         });
 
+        app.events(event -> {
+            event.serverStopping(connPool::close);
+        });
+
         app.before(ctx -> {
             ctx.res().setCharacterEncoding("UTF-8");
             ctx.req().setCharacterEncoding("UTF-8");
