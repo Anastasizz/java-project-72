@@ -18,6 +18,6 @@ public class UrlCheckService {
         var title = parser.getTitle();
         var content = parser.getAttribute("meta[name=description]", "content");
 
-        return new UrlCheck(url.getId(), statusCode, title, h1, content);
+        return new UrlCheck(statusCode, title, h1, content, url.getId());
     }
 }

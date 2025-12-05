@@ -1,11 +1,11 @@
 package gg.jte.generated.ondemand.urls;
-import hexlet.code.dto.UrlsPage;
+import hexlet.code.dto.UrlItemsPage;
 import java.time.format.DateTimeFormatter;
 @SuppressWarnings("unchecked")
 public final class JteindexGenerated {
 	public static final String JTE_NAME = "urls/index.jte";
 	public static final int[] JTE_LINE_INFO = {0,0,1,2,2,2,2,6,6,9,9,12,12,14,14,25,25,27,27,27,29,29,29,29,29,29,29,32,32,33,33,33,34,34,36,36,36,38,38,41,41,43,43,43,44,44,44,2,2,2,2};
-	public static void render(gg.jte.html.HtmlTemplateOutput jteOutput, gg.jte.html.HtmlInterceptor jteHtmlInterceptor, UrlsPage page) {
+	public static void render(gg.jte.html.HtmlTemplateOutput jteOutput, gg.jte.html.HtmlInterceptor jteHtmlInterceptor, UrlItemsPage page) {
 		jteOutput.writeContent("\r\n\r\n\r\n");
 		gg.jte.generated.ondemand.layout.JtepageGenerated.render(jteOutput, jteHtmlInterceptor, page, new gg.jte.html.HtmlContent() {
 			public void writeTo(gg.jte.html.HtmlTemplateOutput jteOutput) {
@@ -45,7 +45,7 @@ public final class JteindexGenerated {
 		jteOutput.writeContent("\r\n");
 	}
 	public static void renderMap(gg.jte.html.HtmlTemplateOutput jteOutput, gg.jte.html.HtmlInterceptor jteHtmlInterceptor, java.util.Map<String, Object> params) {
-		UrlsPage page = (UrlsPage)params.get("page");
+		UrlItemsPage page = (UrlItemsPage)params.get("page");
 		render(jteOutput, jteHtmlInterceptor, page);
 	}
 }

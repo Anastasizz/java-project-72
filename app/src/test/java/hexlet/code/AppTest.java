@@ -4,6 +4,7 @@ import hexlet.code.model.Url;
 import hexlet.code.model.UrlCheck;
 import hexlet.code.repository.UrlCheckRepository;
 import hexlet.code.service.UrlCheckService;
+import hexlet.code.service.UrlService;
 import io.javalin.Javalin;
 import io.javalin.testtools.JavalinTest;
 import okhttp3.mockwebserver.MockWebServer;
@@ -79,7 +80,6 @@ public class AppTest {
 
     @Test
     public void testCreateUrl() {
-
         JavalinTest.test(app, (server, client) -> {
             var name = "https://mypage.com";
             var requestBody = "url=" + name;
@@ -90,6 +90,19 @@ public class AppTest {
             assertTrue(UrlRepository.findByName(name).isPresent());
 
         });
+    }
+
+    @Test
+    public void testNormalizeUrl() {
+        var name = "https://some-domain.org/example/path";
+        var expected = "https://some-domain.org";
+        var actual = UrlService.normalize(name);
+        assertEquals(expected, actual);
+
+        name = "https://some-domain.org:8080/example/path";
+        expected = "https://some-domain.org:8080";
+        actual = UrlService.normalize(name);
+        assertEquals(expected, actual);
     }
 
     @Test
@@ -124,7 +137,8 @@ public class AppTest {
         JavalinTest.test(app, (server, client) -> {
             var url = new Url(1L, "http://example.com", LocalDateTime.now());
             UrlRepository.save(url);
-            var check =  new UrlCheck(url.getId(), 200, "Title", "Hello", "description");
+            var id = url.getId();
+            var check =  new UrlCheck(200, "Title", "Hello", "description", id);
             UrlCheckRepository.save(check);
 
 

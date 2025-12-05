@@ -8,10 +8,10 @@ import java.util.List;
 
 @AllArgsConstructor
 @Getter
-public class UrlsPage extends MainPage {
+public class UrlItemsPage extends MainPage {
     private List<UrlItem> urls;
 
-    public UrlsPage(List<UrlItem> urls, String flash, Status status) {
+    public UrlItemsPage(List<UrlItem> urls, String flash, Status status) {
         super(flash, status);
         this.urls = urls;
     }

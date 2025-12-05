@@ -1,6 +1,6 @@
-@import hexlet.code.dto.UrlsPage
+@import hexlet.code.dto.UrlItemsPage
 @import java.time.format.DateTimeFormatter
-@param UrlsPage page
+@param UrlItemsPage page
 
 
 
