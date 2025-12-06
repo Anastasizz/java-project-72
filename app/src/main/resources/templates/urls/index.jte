@@ -30,7 +30,7 @@
                         </td>
                         <td>
                             @if(url.getLastCheck() != null)
-                                ${url.getLastCheck().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))}
+                                ${url.getLastCheck().format(DateTimeFormatter.ofPattern("d/MdM/yyyy HH:mm"))}
                             @endif
                         </td>
                         <td>${url.getStatusCode()}</td>

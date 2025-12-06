@@ -3,7 +3,6 @@ package hexlet.code.service;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Optional;
 
 public class UrlService {
     public static String normalize(String name) {
