@@ -10,7 +10,7 @@ public class UrlService {
         try {
             var url = new URI(name).toURL();
             var port = url.getPort();
-            return url.getProtocol() + "://" + url.getHost()
+            return url.getProtocol() + "://" + url.getHost().toLowerCase()
                     + (port != -1 ? ":" + port : "");
         } catch (URISyntaxException | MalformedURLException | IllegalArgumentException e) {
             throw new RuntimeException("Некорректный URL");

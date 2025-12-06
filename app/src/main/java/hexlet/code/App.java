@@ -9,6 +9,7 @@ import hexlet.code.controller.UrlsController;
 import hexlet.code.repository.BaseRepository;
 import io.javalin.Javalin;
 import io.javalin.rendering.template.JavalinJte;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -17,6 +18,7 @@ import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.stream.Collectors;
 
+@Slf4j
 public final class App {
     private static final String H2_URL = "jdbc:h2:mem:project;DB_CLOSE_DELAY=-1;";
 
@@ -29,6 +31,7 @@ public final class App {
         var connPool = new HikariDataSource(hikariConfig);
         var sql = readResourceFile("schema.sql");
 
+        log.info(sql);
         try (var connection = connPool.getConnection();
              var statement = connection.createStatement()) {
             statement.execute(sql);
@@ -41,14 +44,8 @@ public final class App {
             config.fileRenderer(new JavalinJte(createTemplateEngine()));
         });
 
-        app.events(event -> {
-            event.serverStopping(connPool::close);
-        });
-
         app.before(ctx -> {
-            ctx.res().setCharacterEncoding("UTF-8");
-            ctx.req().setCharacterEncoding("UTF-8");
-            ctx.contentType("text/html; charset=UTF-8");
+            ctx.contentType("text/html; charset=utf-8");
         });
 
         app.get("/", UrlsController::home);

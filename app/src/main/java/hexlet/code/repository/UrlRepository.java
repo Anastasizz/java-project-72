@@ -18,12 +18,15 @@ public class UrlRepository extends BaseRepository {
         try (var conn = connPool.getConnection();
             var stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, url.getName());
-            stmt.setTimestamp(2, Timestamp.valueOf(LocalDateTime.now()));
+            var createdAt = LocalDateTime.now();
+            stmt.setTimestamp(2, Timestamp.valueOf(createdAt));
+
             stmt.executeUpdate();
 
             try (var keys = stmt.getGeneratedKeys()) {
                 if (keys.next()) {
                     url.setId(keys.getLong(1));
+                    url.setCreatedAt(createdAt);
                 } else {
                     throw new SQLException("No generated ID returned for URL: " + url.getName());
                 }

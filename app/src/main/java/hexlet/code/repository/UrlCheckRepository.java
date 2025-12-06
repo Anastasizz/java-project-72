@@ -21,13 +21,15 @@ public class UrlCheckRepository extends BaseRepository {
             stmt.setString(3, urlCheck.getH1());
             stmt.setString(4, urlCheck.getDescription());
             stmt.setLong(5, urlCheck.getUrlId());
-            stmt.setTimestamp(6, Timestamp.valueOf(LocalDateTime.now()));
+            var createdAt = LocalDateTime.now();
+            stmt.setTimestamp(6, Timestamp.valueOf(createdAt));
 
             stmt.executeUpdate();
 
             try (var keys = stmt.getGeneratedKeys()) {
                 if (keys.next()) {
                     urlCheck.setId(keys.getLong(1));
+                    urlCheck.setCreatedAt(createdAt);
                 } else {
                     throw new SQLException("No generated ID returned");
                 }

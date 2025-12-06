@@ -14,6 +14,8 @@
 [Javalin App](https://java-project-72-hwpp.onrender.com)
 
 # Анализатор страниц
-
 Веб-приложение, которое анализирует указанные страницы на SEO пригодность
 
+![Главная страница](screenshots/main_page.png)
+![Список сайтов](screenshots/index_page.png)
+![Просмотр сайта](screenshots/show_page.png)

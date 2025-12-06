@@ -27,6 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class AppTest {
     private Javalin app;
 
+
     @BeforeEach
     public final void clearData() throws SQLException, IOException {
         app = App.getApp();
@@ -82,10 +83,14 @@ public class AppTest {
             var name = "https://mypage.com";
             var requestBody = "url=" + name;
             var response = client.post("/urls", requestBody);
-            assertEquals(200, response.code());
 
-            assertNotNull(response.body());
-            assertTrue(response.body().string().contains(name));
+
+            var body = response.body().string();
+
+            assertEquals(200, response.code());
+            assertNotNull(body);
+            assertTrue(body.contains(name));
+
             assertTrue(UrlRepository.findByName(name).isPresent());
 
         });
