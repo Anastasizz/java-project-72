@@ -25,6 +25,7 @@ public final class App {
         var jdbcUrl = getDataBaseUrl();
         hikariConfig.setJdbcUrl(jdbcUrl);
 
+        @SuppressWarnings("resource")
         var connPool = new HikariDataSource(hikariConfig);
         var sql = readResourceFile("schema.sql");
 

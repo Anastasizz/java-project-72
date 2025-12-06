@@ -17,21 +17,21 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 
 import hexlet.code.repository.UrlRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 public class AppTest {
-    private static final Logger LOG = LoggerFactory.getLogger(AppTest.class);
     private Javalin app;
 
     @BeforeEach
     public final void clearData() throws SQLException, IOException {
         app = App.getApp();
         UrlRepository.removeAll();
+        UrlCheckRepository.removeAll();
     }
 
     @Test
@@ -40,9 +40,6 @@ public class AppTest {
             var response = client.get("/");
             var body = response.body();
             assertNotNull(body);
-            String html = body.string();
-            LOG.info("HTML RESPONSE:\n{}", html);
-
             assertEquals(200, response.code());
         });
     }
@@ -52,6 +49,7 @@ public class AppTest {
         JavalinTest.test(app, (server, client) -> {
             var url = new Url("https://mypage.com");
             UrlRepository.save(url);
+
             var response = client.get("/urls/" + url.getId());
             assertEquals(200, response.code());
             assertNotNull(response.body());
@@ -85,6 +83,7 @@ public class AppTest {
             var requestBody = "url=" + name;
             var response = client.post("/urls", requestBody);
             assertEquals(200, response.code());
+
             assertNotNull(response.body());
             assertTrue(response.body().string().contains(name));
             assertTrue(UrlRepository.findByName(name).isPresent());
@@ -103,6 +102,17 @@ public class AppTest {
         expected = "https://some-domain.org:8080";
         actual = UrlService.normalize(name);
         assertEquals(expected, actual);
+
+        name = "https://some-domain.org:8080/example/path";
+        expected = "https://some-domain.org:8080";
+        actual = UrlService.normalize(name);
+        assertEquals(expected, actual);
+
+        var invalidUrl = "this-is-not-a-url";
+        RuntimeException exc = assertThrows(RuntimeException.class, () -> {
+            UrlService.normalize(invalidUrl);
+        });
+        assertEquals("Некорректный URL", exc.getMessage());
     }
 
     @Test
