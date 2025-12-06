@@ -13,12 +13,12 @@ import java.util.Optional;
 
 public class UrlRepository extends BaseRepository {
     public static void save(Url url) throws SQLException {
-        String sql = "INSERT INTO urls (name) VALUES (?)";
+        String sql = "INSERT INTO urls (name, created_at) VALUES (?, ?)";
 
         try (var conn = connPool.getConnection();
             var stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, url.getName());
-
+            stmt.setTimestamp(2, Timestamp.valueOf(LocalDateTime.now()));
             stmt.executeUpdate();
 
             try (var keys = stmt.getGeneratedKeys()) {
