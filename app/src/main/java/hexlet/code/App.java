@@ -23,11 +23,11 @@ public final class App {
     private static final String H2_URL = "jdbc:h2:mem:project;DB_CLOSE_DELAY=-1;";
 
     public static Javalin getApp() throws IOException, SQLException {
+
         var hikariConfig = new HikariConfig();
         var jdbcUrl = getDataBaseUrl();
         hikariConfig.setJdbcUrl(jdbcUrl);
 
-        @SuppressWarnings("resource")
         var connPool = new HikariDataSource(hikariConfig);
         var sql = readResourceFile("schema.sql");
 

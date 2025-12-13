@@ -2,6 +2,7 @@ package hexlet.code;
 
 import hexlet.code.model.Url;
 import hexlet.code.model.UrlCheck;
+import hexlet.code.repository.BaseRepository;
 import hexlet.code.repository.UrlCheckRepository;
 import hexlet.code.service.UrlCheckService;
 import hexlet.code.service.UrlService;
@@ -9,6 +10,7 @@ import io.javalin.Javalin;
 import io.javalin.testtools.JavalinTest;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.MockResponse;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -28,14 +30,22 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public final class AppTest {
-    private Javalin app;
+    private static Javalin app;
     private static final Logger LOG = LoggerFactory.getLogger(AppTest.class);
 
     @BeforeEach
-    public void clearData() throws SQLException, IOException {
+    public void clearData() throws SQLException, IOException  {
         app = App.getApp();
         UrlCheckRepository.removeAll();
         UrlRepository.removeAll();
+    }
+
+    @AfterEach
+    void closePool() {
+        var pool = BaseRepository.connPool;
+        if (pool != null && !pool.isClosed()) {
+            pool.close();
+        }
     }
 
     @Test
