@@ -201,4 +201,25 @@ public class AppTest {
         });
     }
 
+    @Test
+    public void testGetEntities() throws Exception {
+        var url1 = new Url("https://example1.com");
+        var url2 = new Url("https://example2.com");
+
+        UrlRepository.save(url1);
+        UrlRepository.save(url2);
+
+        var urls = UrlRepository.getEntities();
+
+        assertNotNull(urls);
+        assertEquals(2, urls.size());
+
+        var names = urls.stream()
+                       .map(Url::getName)
+                       .toList();
+
+        assertTrue(names.contains("https://example1.com"));
+        assertTrue(names.contains("https://example2.com"));
+    }
+
 }
