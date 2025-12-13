@@ -10,6 +10,7 @@ import io.javalin.testtools.JavalinTest;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.MockResponse;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -28,12 +29,16 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class AppTest {
-    private Javalin app;
+    private static Javalin app;
     private static final Logger LOG = LoggerFactory.getLogger(AppTest.class);
 
-    @BeforeEach
-    public final void clearData() throws SQLException, IOException {
+    @BeforeAll
+    static void init() throws SQLException, IOException {
         app = App.getApp();
+    }
+
+    @BeforeEach
+    public void clearData() throws SQLException{
         UrlRepository.removeAll();
         UrlCheckRepository.removeAll();
     }
