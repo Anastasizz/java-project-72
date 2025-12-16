@@ -13,6 +13,7 @@ import hexlet.code.service.UrlService;
 import io.javalin.http.Context;
 import io.javalin.http.NotFoundResponse;
 
+import java.net.URI;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -20,34 +21,39 @@ import java.util.List;
 import static io.javalin.rendering.template.TemplateUtil.model;
 
 public class UrlsController {
-    public static void create(Context ctx) throws SQLException {
-        var rawName = ctx.formParam("url");
+    public static void create(Context ctx) throws Exception {
+        var inputUrl = ctx.formParam("url");
 
-        if (rawName == null || rawName.isBlank()) {
+        if (inputUrl == null || inputUrl.isBlank()) {
             ctx.sessionAttribute("flash", "URL не введен");
             ctx.redirect("/");
             return;
         }
 
+        URI parsedUrl;
         try {
-            var name = UrlService.normalize(rawName);
-            var maybeUrl = UrlRepository.findByName(name);
-            if (maybeUrl.isPresent()) {
-                ctx.sessionAttribute("flash", "Страница уже существует");
-                ctx.sessionAttribute("status", Status.PRIMARY);
-                ctx.redirect("/urls");
-                return;
-            }
-            var url = new Url(name);
-            UrlRepository.save(url);
-            ctx.sessionAttribute("flash", "Страница успешно добавлена");
-            ctx.sessionAttribute("status", Status.SUCCESS);
-            ctx.redirect("/urls");
-        } catch (RuntimeException ex) {
-            ctx.sessionAttribute("flash", ex.getMessage());
+            parsedUrl = new URI(inputUrl);
+        } catch (Exception ex) {
+            ctx.sessionAttribute("flash", "Некорректный URL");
             ctx.sessionAttribute("status", Status.DANGER);
             ctx.redirect("/");
+            return;
         }
+
+        var normalizeUrl = UrlService.normalize(parsedUrl);
+        var maybeUrl = UrlRepository.findByName(normalizeUrl);
+        if (maybeUrl.isPresent()) {
+            ctx.sessionAttribute("flash", "Страница уже существует");
+            ctx.sessionAttribute("status", Status.PRIMARY);
+            ctx.redirect("/urls");
+            return;
+        }
+
+        var url = new Url(normalizeUrl);
+        UrlRepository.save(url);
+        ctx.sessionAttribute("flash", "Страница успешно добавлена");
+        ctx.sessionAttribute("status", Status.SUCCESS);
+        ctx.redirect("/urls");
     }
 
     public static void index(Context ctx) throws SQLException {

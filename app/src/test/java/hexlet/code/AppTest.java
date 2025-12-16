@@ -4,10 +4,10 @@ import hexlet.code.model.Url;
 import hexlet.code.model.UrlCheck;
 import hexlet.code.repository.BaseRepository;
 import hexlet.code.repository.UrlCheckRepository;
-import hexlet.code.service.UrlCheckService;
 import hexlet.code.service.UrlService;
 import io.javalin.Javalin;
 import io.javalin.testtools.JavalinTest;
+import lombok.extern.slf4j.Slf4j;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.MockResponse;
 import org.junit.jupiter.api.AfterEach;
@@ -15,12 +15,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.net.URI;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
 
 import hexlet.code.repository.UrlRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -29,15 +27,16 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+@Slf4j
 public final class AppTest {
     private static Javalin app;
-    private static final Logger LOG = LoggerFactory.getLogger(AppTest.class);
 
     @BeforeEach
     public void clearData() throws SQLException, IOException  {
         app = App.getApp();
         UrlCheckRepository.removeAll();
         UrlRepository.removeAll();
+        log.info("===Database cleared===");
     }
 
     @AfterEach
@@ -46,12 +45,15 @@ public final class AppTest {
         if (pool != null && !pool.isClosed()) {
             pool.close();
         }
+        log.info("===Connection pool closed===");
     }
 
     @Test
     public void testMainPage() {
         JavalinTest.test(app, (server, client) -> {
             var response = client.get("/");
+            log.info("GET / -> status {}", response.code());
+
             var body = response.body();
             assertNotNull(body);
             assertEquals(200, response.code());
@@ -63,8 +65,11 @@ public final class AppTest {
         JavalinTest.test(app, (server, client) -> {
             var url = new Url("https://mypage.com");
             UrlRepository.save(url);
+            log.info("Saved URL with id={}", url.getId());
 
             var response = client.get("/urls/" + url.getId());
+            log.info("GET /urls/{} -> status {}", url.getId(), response.code());
+
             assertEquals(200, response.code());
             assertNotNull(response.body());
             assertTrue(response.body().string().contains(String.valueOf(url.getName())));
@@ -75,6 +80,8 @@ public final class AppTest {
     void testUrlNotFound() throws Exception {
         JavalinTest.test(app, (server, client) -> {
             var response = client.get("/urls/999999");
+            log.info("GET /urls/999999 -> status {}", response.code());
+
             assertEquals(404, response.code());
             assertNotNull(response.body());
             assertTrue(response.body().string().contains("Url with id = 999999 not found"));
@@ -86,9 +93,12 @@ public final class AppTest {
         JavalinTest.test(app, (server, client) -> {
             var url = new Url("https://mypage.com");
             UrlRepository.save(url);
-            var response = client.get("/urls");
-            assertEquals(200, response.code());
+            log.info("Saved URL with id={}", url.getId());
 
+            var response = client.get("/urls");
+            log.info("GET /urls -> status {}", response.code());
+
+            assertEquals(200, response.code());
         });
     }
 
@@ -98,6 +108,7 @@ public final class AppTest {
             var name = "https://mypage.com";
             var requestBody = "url=" + name;
             var response = client.post("/urls", requestBody);
+            log.info("POST /urls -> status {}", response.code());
 
 
             var body = response.body().string();
@@ -107,32 +118,32 @@ public final class AppTest {
             name = " ";
             requestBody = "url=" + name;
             response = client.post("/urls", requestBody);
+            log.info("POST /urls -> status {}", response.code());
             assertEquals(200, response.code());
         });
     }
 
     @Test
-    public void testNormalizeUrl() {
-        var name = "https://some-domain.org/example/path";
+    public void testNormalizeUrl() throws Exception {
+        var name = new URI("https://some-domain.org/example/path");
         var expected = "https://some-domain.org";
         var actual = UrlService.normalize(name);
         assertEquals(expected, actual);
 
-        name = "https://some-domain.org:8080/example/path";
+        name = new URI("https://some-domain.org:8080/example/path");
         expected = "https://some-domain.org:8080";
         actual = UrlService.normalize(name);
         assertEquals(expected, actual);
 
-        name = "https://some-domain.org:8080/example/path";
+        name = new URI("https://some-domain.org:8080/example/path");
         expected = "https://some-domain.org:8080";
         actual = UrlService.normalize(name);
         assertEquals(expected, actual);
 
-        var invalidUrl = "this-is-not-a-url";
+        var invalidUrl = new URI("this-is-not-a-url");
         RuntimeException exc = assertThrows(RuntimeException.class, () -> {
             UrlService.normalize(invalidUrl);
         });
-        //assertEquals("Некорректный URL", exc.getMessage());
     }
 
     @Test
@@ -144,18 +155,28 @@ public final class AppTest {
                     .setResponseCode(200));
 
             mockServer.start();
-
             var baseUrl = mockServer.url("/").toString();
-            var url = new Url(1L, baseUrl, LocalDateTime.now());
 
-            UrlCheck check = UrlCheckService.check(url);
+            JavalinTest.test(app, (server, client) -> {
+                var url = new Url(baseUrl);
+                UrlRepository.save(url);
+                var urlId = url.getId();
+                log.info("Saved URL with id={}", urlId);
 
-            assertNotNull(check);
-            assertEquals(1L, check.getUrlId());
-            assertEquals(200, check.getStatusCode());
-            assertEquals("Title", check.getTitle());
-            assertEquals("Hello", check.getH1());
-            assertEquals("description", check.getDescription());
+                var response = client.post("/urls/" + urlId + "/checks");
+                assertEquals(200, response.code());
+
+                var checks = UrlCheckRepository.findAllByUrlId(urlId);
+                assertFalse(checks.isEmpty());
+
+                var check = checks.getFirst();
+                assertEquals(urlId, check.getUrlId());
+                assertEquals(200, check.getStatusCode());
+                assertEquals("Title", check.getTitle());
+                assertEquals("Hello", check.getH1());
+                assertEquals("description", check.getDescription());
+
+            });
 
             var recordedRequest = mockServer.takeRequest();
             assertEquals("/", recordedRequest.getPath());
@@ -233,3 +254,24 @@ public final class AppTest {
     }
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

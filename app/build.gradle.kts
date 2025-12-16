@@ -1,8 +1,6 @@
 plugins {
-    id("java")
     application
     distribution
-
     checkstyle
     jacoco
 
@@ -34,6 +32,7 @@ dependencies {
     implementation("gg.jte:jte:3.2.1")
     implementation("com.konghq:unirest-java:3.14.5")
     implementation("org.jsoup:jsoup:1.21.2")
+    //implementation(kotlin("script-runtime"))
 
 }
 
